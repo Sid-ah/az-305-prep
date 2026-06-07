@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AZ-305 Study Hub — Azure Solutions Architect Expert</title>
+  <meta name="description" content="Study hub for AZ-305: notes, flashcards, and randomized practice quizzes with explanations." />
+  <meta name="theme-color" content="#0a6ed1" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="icon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AZ-305" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <div class="brand">
+      <span class="brand-logo">AZ</span>
+      <div class="brand-text">
+        <strong>AZ-305 Study Hub</strong>
+        <small>Designing Microsoft Azure Infrastructure Solutions</small>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="overallProgress" class="overall-progress" title="Average best quiz score across sections"></span>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar">
+      <nav id="sectionNav" class="section-nav"><!-- populated by engine --></nav>
+    </aside>
+    <main id="main" class="main">
+      <div id="view" class="view"><!-- populated by engine --></div>
+    </main>
+  </div>
+
+  <div id="navScrim" class="nav-scrim"></div>
+
+  <!-- Engine -->
+  <script src="js/engine.js"></script>
+
+  <!-- Section data (load order defines fallback ordering; engine sorts by `order`) -->
+  <script src="data/section-networking.js"></script>
+  <script src="data/section-compute.js"></script>
+  <script src="data/section-application-architecture.js"></script>
+  <script src="data/section-migrations.js"></script>
+  <script src="data/section-storage.js"></script>
+  <script src="data/section-relational-data.js"></script>
+  <script src="data/section-cosmos-db.js"></script>
+  <script src="data/section-data-integration.js"></script>
+  <script src="data/section-messaging.js"></script>
+  <script src="data/section-identity-governance.js"></script>
+  <script src="data/section-monitoring.js"></script>
+  <script src="data/section-bcdr.js"></script>
+
+  <script>AZ305.start();</script>
+  <script>
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function (e) { console.warn("SW registration failed", e); });
+      });
+    }
+  </script>
+</body>
+</html>
