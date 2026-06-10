@@ -23,6 +23,8 @@ No build step, no dependencies. Either:
 - **Flashcards** — click to flip, shuffle the deck, mark cards as known.
 - **Quizzes** — pick 5/10/15/20 or all questions; each attempt pulls a **random set from the question bank** and **shuffles answer order**, so retakes are always different.
 - **Answer checking** — instant right/wrong, an **explanation** of the reasoning, and a **"how to pick the right answer"** tip (elimination rules, keyword spotting, distractor warnings).
+- **Acronym tooltips** — hover or tap any dotted shorthand (NAT, NSG, ASG, …) anywhere in the app for a plain-English definition aimed at newcomers.
+- **Glossary page** — a searchable, categorized reference of every acronym used across the hub.
 - **Progress tracking** — best score per section and overall average, saved in your browser (localStorage).
 - **Light/Dark theme** and responsive layout.
 
@@ -39,10 +41,11 @@ No build step, no dependencies. Either:
 index.html                 App shell + section script tags
 css/styles.css             Theme + layout
 js/engine.js               Registry, router, flashcards, quiz engine, progress
+js/glossary.js             Acronym glossary + auto-tooltip layer (and the Glossary page data)
 data/section-*.js          One file per section (notes, flashcards, question bank)
 ```
 
-Each section file registers itself via `AZ305.registerSection({...})`. To add or edit content, edit the relevant `data/section-*.js` file.
+Each section file registers itself via `AZ305.registerSection({...})`. To add or edit content, edit the relevant `data/section-*.js` file. To add or refine an acronym definition, edit the `G` map in `js/glossary.js`.
 
 ## Content source
 

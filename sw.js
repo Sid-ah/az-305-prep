@@ -1,10 +1,11 @@
 /* AZ-305 Study Hub service worker — offline app shell + runtime caching */
-const CACHE = "az305-shell-v1";
+const CACHE = "az305-shell-v2";
 const SHELL = [
   "./",
   "index.html",
   "css/styles.css",
   "js/engine.js",
+  "js/glossary.js",
   "manifest.webmanifest",
   "favicon.svg",
   "icon-32.png",

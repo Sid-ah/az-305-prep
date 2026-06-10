@@ -81,6 +81,7 @@
     var h = location.hash.replace(/^#\/?/, "");
     if (!h) return { name: "home" };
     if (h === "exam") return { name: "exam" };
+    if (h === "glossary") return { name: "glossary" };
     var parts = h.split("/");
     return { name: "section", id: parts[0], tab: parts[1] || "notes" };
   }
@@ -90,6 +91,7 @@
     if (r.name !== "exam") clearExamTimer();
     if (r.name === "home") renderHome();
     else if (r.name === "exam") renderExamIntro();
+    else if (r.name === "glossary") renderGlossary();
     else if (r.name === "section" && byId[r.id]) renderSection(byId[r.id], r.tab);
     else renderHome();
     renderNav();
@@ -105,6 +107,8 @@
       '" data-route="">🏠 <span>Dashboard</span></button>';
     html += '<button class="nav-item nav-home' + (r.name === "exam" ? " active" : "") +
       '" data-route="exam">🎓 <span>Mock Exam</span></button>';
+    html += '<button class="nav-item nav-home' + (r.name === "glossary" ? " active" : "") +
+      '" data-route="glossary">📚 <span>Glossary</span></button>';
     DOMAINS.forEach(function (d) {
       var secs = sectionsInDomain(d.key);
       if (!secs.length) return;
@@ -162,7 +166,10 @@
     html += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">' +
       '<div><strong>How to use this hub</strong><div class="lead" style="margin:4px 0 0;font-size:.92rem">' +
       '1) Read the notes &nbsp;→&nbsp; 2) Drill the flashcards &nbsp;→&nbsp; 3) Take the quiz (questions are randomized each attempt). ' +
-      'Aim for 80%+ on every section before exam day.</div></div></div>';
+      'Aim for 80%+ on every section before exam day.<br>' +
+      '<span class="hint-new">New to Azure?</span> Hover or tap any <span class="term-demo">dotted term</span> ' +
+      '(like NSG or NAT) for a plain-English definition — or open the <a href="#glossary">full Glossary</a>.' +
+      '</div></div></div>';
 
     var examBest = progress.__exam && progress.__exam.best != null ? progress.__exam.best : null;
     html += '<button class="card" data-route="exam" style="width:100%;text-align:left;cursor:pointer;border:none;' +
@@ -200,7 +207,74 @@
     });
   }
 
-  /* ---------------- Section shell ---------------- */
+  /* ---------------- Glossary ---------------- */
+  function renderGlossary() {
+    var v = document.getElementById("view");
+    var G = window.AZ305_GLOSSARY || {};
+    var keys = Object.keys(G);
+
+    // Group by category, then sort terms alphabetically (case-insensitive).
+    var cats = {};
+    keys.forEach(function (k) {
+      var cat = G[k][2] || "Other";
+      (cats[cat] = cats[cat] || []).push(k);
+    });
+    var catOrder = ["Networking", "Compute & Containers", "App & Integration", "Storage",
+      "Databases", "Data Integration", "Identity & Governance", "Security", "Monitoring",
+      "Resilience", "Migration", "Cloud Models"];
+    var orderedCats = Object.keys(cats).sort(function (a, b) {
+      var ia = catOrder.indexOf(a), ib = catOrder.indexOf(b);
+      if (ia === -1) ia = 99; if (ib === -1) ib = 99;
+      return ia - ib || a.localeCompare(b);
+    });
+
+    var html = '' +
+      '<div class="hero hero-glossary"><span class="pill" style="background:rgba(255,255,255,.2);color:#fff">Plain-English reference</span>' +
+      '<h1>📚 Glossary</h1>' +
+      '<p>Every acronym and shorthand used across this hub, explained for someone seeing it for the first time. ' +
+      'Anywhere in the app you can also hover or tap a <span class="term-demo">dotted term</span> to get the same definition inline.</p>' +
+      '<div class="gloss-search-wrap"><input id="glossSearch" class="gloss-search" type="search" ' +
+      'placeholder="🔎 Search ' + keys.length + ' terms (e.g. NSG, redundancy, identity)…" autocomplete="off" /></div>' +
+      '</div>';
+
+    html += '<div id="glossResults">';
+    orderedCats.forEach(function (cat) {
+      var terms = cats[cat].sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+      html += '<div class="gloss-cat" data-cat="' + esc(cat) + '"><h2 class="gloss-cat-title">' + esc(cat) + '</h2><div class="gloss-grid">';
+      terms.forEach(function (k) {
+        var d = G[k];
+        html += '<div class="gloss-item" data-search="' + esc((k + " " + d[0] + " " + d[1]).toLowerCase()) + '">' +
+          '<div class="gloss-term">' + esc(k) + '</div>' +
+          '<div class="gloss-full">' + esc(d[0]) + '</div>' +
+          '<div class="gloss-desc">' + esc(d[1]) + '</div>' +
+          '</div>';
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="empty gloss-empty" id="glossEmpty" style="display:none">No terms match that search.</div>';
+
+    v.innerHTML = html;
+
+    var search = document.getElementById("glossSearch");
+    var results = document.getElementById("glossResults");
+    var emptyMsg = document.getElementById("glossEmpty");
+    search.addEventListener("input", function () {
+      var q = search.value.trim().toLowerCase();
+      var anyVisible = false;
+      Array.prototype.forEach.call(results.querySelectorAll(".gloss-cat"), function (catEl) {
+        var catVisible = false;
+        Array.prototype.forEach.call(catEl.querySelectorAll(".gloss-item"), function (it) {
+          var match = !q || it.getAttribute("data-search").indexOf(q) !== -1;
+          it.style.display = match ? "" : "none";
+          if (match) { catVisible = true; anyVisible = true; }
+        });
+        catEl.style.display = catVisible ? "" : "none";
+      });
+      emptyMsg.style.display = anyVisible ? "none" : "";
+    });
+  }
+
   function renderSection(s, tab) {
     var v = document.getElementById("view");
     var p = progress[s.id];
