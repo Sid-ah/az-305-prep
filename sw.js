@@ -1,5 +1,5 @@
 /* AZ-305 Study Hub service worker — offline app shell + runtime caching */
-const CACHE = "az305-shell-v2";
+const CACHE = "az305-shell-v4";
 const SHELL = [
   "./",
   "index.html",

@@ -421,7 +421,8 @@
         if (activeTerm === elm) hideTip(); else { showTip(elm); activeTerm = elm; }
       }
     });
-    window.addEventListener("scroll", function () { if (!activeTerm) hideTip(); }, true);
+    // Passive + capture so it never blocks the compositor's scroll thread.
+    window.addEventListener("scroll", function () { if (!activeTerm && tip && tip.classList.contains("show")) hideTip(); }, { capture: true, passive: true });
     window.addEventListener("resize", hideTip);
   }
 
